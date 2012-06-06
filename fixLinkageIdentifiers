@@ -1,0 +1,47 @@
+#!/usr/bin/env perl
+#
+# https://github.com/deadmoose/grodd
+#
+# Flash includes "linkageIdentifier" attributes on DOMSymbolItems even for as3 projects where they
+# aren't used (since "linkageClassName is"), but doesn't keep them up-to-date. This can lead to them
+# containing stale, duplicate values after symbols are renamed. The UI will carp about those dupes,
+# but not give you a way to fix them.
+#
+# Pass this a list of XML files out of the library to look for any where the linkageIdentifier
+# and linkageClassName disagrees, and it will stomp on the former's contents with the latter.
+
+use strict;
+
+if ($#ARGV == -1) {
+    die "Usage: $0 <file> [file...]\n";
+}
+
+foreach my $filename (@ARGV) {
+    if (!open(FILE, $filename)) {
+        warn "Couldn't open file '$filename', skipping: $!\n";
+        next;
+    }
+
+    # Snag the first line to see if we care about this one.
+    $_ = <FILE>;
+    close(FILE);
+
+    # First see if we look right & snag the linkageClassName. Could combine this
+    # with a check for the matching linkageIdentifier, except the attributes could
+    # be arbitrarily ordered
+    if (/<DOMSymbolItem .*?linkageClassName="(.+?)"/) {
+        # Looks interesting...
+        my $linkageClassName = $1;
+
+        if (/linkageIdentifier="(.+?)"/ && $1 ne $linkageClassName) {
+            # Bingo. Edit in place
+
+            local $INPLACE_EDIT = '.bak';
+            local @ARGV = ($filename);
+            while (<>) {
+                s/linkageIdentifier="(.+?)"/linkageIdentifier="$linkageClassName"/;
+                print;
+            }
+        }
+    }
+}
