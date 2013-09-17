@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+#
+# https://github.com/deadmoose/grodd
+#
+# Pack the current directory's xfl up into a .fla file.
+# Which is really mainly a glorified wrapper around zip.
+
+use strict;
+
+my @xfls = glob("*.xfl");
+
+if ($#xfls < 0) {
+    die "Couldn't identify XFL file.\n";
+} elsif ($#xfls > 0) {
+    die "Too many XFL files found: @xfls\n";
+}
+
+$xfls[0] =~ s/\.xfl$//;
+system("zip -qq ../$xfls[0] *");

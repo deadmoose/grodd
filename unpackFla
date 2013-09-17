@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+#
+# https://github.com/deadmoose/grodd
+#
+# Cracks open FLAs. Really just a glorified wrapper around unzip, complete with
+# not doing anything about the warning about the 54 byte discrepency.
+
+use strict;
+
+foreach my $fla (@ARGV) {
+    unless (-e $fla) {
+        warn "Missing file '$fla'\n";
+        next;
+    }
+
+    unless ($fla =~ s/\.fla$//) {
+        warn "Not trusting non '.fla' file '$fla'\n";
+        next;
+    }
+
+    # Oh god, just blindly rm -rfing. YOLO
+    system("rm -rf $fla");
+    system("unzip -qq -d $fla $fla.fla");
+}
