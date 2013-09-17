@@ -36,7 +36,7 @@ foreach my $filename (@ARGV) {
         if (/linkageIdentifier="(.+?)"/ && $1 ne $linkageClassName) {
             # Bingo. Edit in place
 
-            local $INPLACE_EDIT = '.bak';
+            local $^I = '.bak';
             local @ARGV = ($filename);
             while (<>) {
                 s/linkageIdentifier="(.+?)"/linkageIdentifier="$linkageClassName"/;
