@@ -16,4 +16,4 @@ if ($#xfls < 0) {
 }
 
 $xfls[0] =~ s/\.xfl$//;
-system("zip -qq ../$xfls[0] *");
+system("zip -r -qq ../$xfls[0] *");
