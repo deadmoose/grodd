@@ -23,5 +23,12 @@ foreach my $file (@ARGV) {
 
     my @bits = split(/\\/, $file);
     make_path(join("/", @bits[0.. $#bits -1]));
-    rename $file, join("/", @bits);
+
+    my $dest = join("/", @bits);
+
+    if (-e $dest) {
+        print "Duplicate file found: ", $dest, "\n";
+        next;
+    }
+    rename $file, $dest;
 }
