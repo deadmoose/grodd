@@ -1,0 +1,27 @@
+#!/usr/bin/env perl
+#
+# https://github.com/deadmoose/grodd
+#
+# Flash loves to save files named 'foo\bar' instead of putting a file
+# named 'bar' inside the directory 'foo'. Well, flash loves to do that
+# on SOME platforms. And then you wind up with fuckupery when you share
+# the files.
+#
+# Note, this is NOT doing voodoo to mess with the DOMDocument.xml which
+# you might need to depending on how much surgery you're doing. But for
+# now, at least, I haven't needed to with the stuff I'm cleaning up.
+# Knock on wood.
+
+use strict;
+use File::Path qw(make_path);
+
+foreach my $file (@ARGV) {
+    unless ($file =~ /\\/) {
+        # Hooray. No backslashes, so we're fine
+        next;
+    }
+
+    my @bits = split(/\\/, $file);
+    make_path(join("/", @bits[0.. $#bits -1]));
+    rename $file, join("/", @bits);
+}
